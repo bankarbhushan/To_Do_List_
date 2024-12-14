@@ -1,89 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HTML, CSS, JS | PROJECT | TO DO LIST</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<body>
-
-
+  <body>
     <div class="container dark">
-
-        <div class="box dark">
-            <div>
-                <input type="checkbox" class="checkbox" id="checkbox">
-                <label for="checkbox" class="checkbox-label">
-
-                    <span class="ball"></span>
-                </label>
-            </div>
-            <h2>To do List</h2>
-
-            <input type="text" id="input_box" placeholder="Write here...">
-            <ul id="list"></ul>
+      <div class="box dark">
+        <div class="message">
+          <input type="checkbox" class="checkbox" id="checkbox" />
+          <label for="checkbox" class="checkbox-label">
+            <span class="ball"></span>
+          </label>
+          <p id="message"></p>
         </div>
+
+        <h1 id="show_progress"></h1>
+        <h2>To do List</h2>
+
+        <input
+          type="text"
+          id="input_box"
+          placeholder="Add your to do here..."
+        />
+        <ul id="list"></ul>
+      </div>
     </div>
     <div class="progress-bar-container">
-        <div class="progress-bar">
-            <div class="progress"></div>
-        </div>
+      <div class="progress-bar">
+        <div class="progress"></div>
+      </div>
     </div>
     <script>
-        let input_box = document.querySelector("#input_box");
-        let list = document.querySelector("#list");
-        let progressBar = document.querySelector(".progress");
+      let input_box = document.querySelector("#input_box");
+      let list = document.querySelector("#list");
+      let progressBar = document.querySelector(".progress");
 
-        input_box.addEventListener("keyup", function (event) {
-            if (event.key === "Enter") {
-                addItem(this.value);
-                this.value = "";
-                // Clears the input box (this.value = "") after adding the item.
-            }
+      input_box.addEventListener("keyup", function (event) {
+        if (event.key === "Enter") {
+          addItem(this.value);
+          this.value = "";
+          // Clears the input box (this.value = "") after adding the item.
+        }
+      });
+
+      let addItem = (input_box_value) => {
+        if (input_box_value === "") {
+          alert("Its Look like Empty task ");
+          return 0;
+        }
+        let listItem = document.createElement("li");
+        listItem.innerHTML = `${input_box_value} <i></i>`;
+        // <i> element, which will serve as the delete button.
+
+        listItem.addEventListener("click", function () {
+          this.classList.toggle("done");
+          updateProgress();
+          // when click on li
         });
 
-        let addItem = (input_box_value) => {
-            let listItem = document.createElement("li");
-            listItem.innerHTML = `${input_box_value} <i></i>`;
-            // <i> element, which will serve as the delete button.
+        listItem.querySelector("i").addEventListener("click", function (event) {
+          event.stopPropagation(); // Prevent the li click event
+          listItem.remove();
+          updateProgress();
+          // when user remove work
+        });
 
-            listItem.addEventListener("click", function () {
-                this.classList.toggle('done');
-                updateProgress();
-                // when click on li 
-            });
+        list.appendChild(listItem);
+        updateProgress();
+      };
 
-            listItem.querySelector("i").addEventListener("click", function (event) {
-                event.stopPropagation();  // Prevent the li click event
-                listItem.remove();
-                updateProgress();
-                // when user remove work
-            });
+      let updateProgress = () => {
+        let items = document.querySelectorAll("#list li");
+        let doneItems = document.querySelectorAll("#list li.done");
+        let progress =
+          items.length === 0 ? 0 : (doneItems.length / items.length) * 100;
 
-            list.appendChild(listItem);
-            updateProgress();
+        progressBar.style.width = progress + "%";
+
+        let show_progress = document.getElementById("show_progress");
+        show_progress.innerHTML =
+          items.length === 0 ? "No Tasks" : progress.toFixed(0) + "%";
+
+        // Color coding based on progress percentage
+        if (progress === 100) {
+          show_progress.style.color = "#008000"; // Green
+        } else if (progress > 75) {
+          show_progress.style.color = "#90EE90"; // Light Green
+        } else if (progress > 50) {
+          show_progress.style.color = "#FFFF00"; // Yellow
+        } else if (progress > 25) {
+          show_progress.style.color = "#FFA500"; // Orange
+        } else {
+          show_progress.style.color = "#FF0000"; // Red
         }
 
-        let updateProgress = () => {
-            let items = document.querySelectorAll("#list li");
-            let doneItems = document.querySelectorAll("#list li.done");
-            let progress = items.length === 0 ? 0 : (doneItems.length / items.length) * 100;
-            //progress= work complate / total work
-            progressBar.style.width = progress + "%";
-
+        // Motivational messages based on progress percentage
+        let messageElement = document.getElementById("message");
+        if (progress === 100) {
+          messageElement.innerHTML =
+            "Amazing! You've completed all tasks. Keep it up!";
+          messageElement.style.color = "#008000";
+        } else if (progress > 75) {
+          messageElement.innerHTML = "Great job! You're almost there!";
+          messageElement.style.color = "#90EE90";
+        } else if (progress > 50) {
+          messageElement.innerHTML = "You're halfway through! Keep pushing!";
+          messageElement.style.color = "#FFFF00";
+        } else if (progress > 25) {
+          messageElement.innerHTML = "Good start! Stay focused and keep going!";
+          messageElement.style.color = "#FFA500";
+        } else if (progress > 0) {
+          messageElement.innerHTML = "Every step counts! You can do it!";
+          messageElement.style.color = "#FF0000";
+        } else {
+          messageElement.innerHTML = "No tasks completed yet. Start strong!";
+          messageElement.style.color = "#FF0000";
         }
+      };
 
-        // dark
-        const checkbox = document.getElementById("checkbox")
-        checkbox.addEventListener("change", () => {
-            document.body.classList.toggle("dark")
-            document.box.classList.toggle("dark")
-
-        })
+      // dark
+      const checkbox = document.getElementById("checkbox");
+      checkbox.addEventListener("change", () => {
+        document.body.classList.toggle("dark");
+        // document.box.classList.toggle("dark");
+        document.querySelector(".box").classList.toggle("dark");
+      });
     </script>
-</body>
-
+  </body>
 </html>
